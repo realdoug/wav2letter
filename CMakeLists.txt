@@ -9,6 +9,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ----------------------------- Configuration -----------------------------
 
+option(W2L_BUILD_DISTRIBUTED "Build with support for distributed training" ON)
+if(W2L_BUILD_DISTRIBUTED)
+  add_definitions(-DBUILD_DISTRIBUTED)
+endif()
+
 # Build tests
 option(W2L_BUILD_TESTS "Build tests for wav2letter++" ON)
 if (W2L_BUILD_TESTS)

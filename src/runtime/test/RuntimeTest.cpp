@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <unordered_map>
+#include <array>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

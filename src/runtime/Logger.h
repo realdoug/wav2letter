@@ -14,7 +14,7 @@
 
 #include "SpeechStatMeter.h"
 
-#define LOG_MASTER(lvl) LOG_IF(lvl, (fl::getWorldRank() == 0))
+#define LOG_MASTER(lvl) LOG_IF(lvl, (w2l::getWorldRank() == 0))
 
 namespace w2l {
 struct EditDistMeters {
@@ -70,14 +70,17 @@ void allreduceSet(fl::TimeMeter& mtr, af::array& val);
 
 template <typename T>
 void syncMeter(T& mtr) {
-  if (!fl::isDistributedInit()) {
+  #if BUILD_DISTRIBUTED
+    if (!fl::isDistributedInit()) {
+      return;
+    }
+    af::array arr = allreduceGet(mtr);
+    fl::allReduce(arr);
+    allreduceSet(mtr, arr);
+  #else
     return;
-  }
-  af::array arr = allreduceGet(mtr);
-  fl::allReduce(arr);
-  allreduceSet(mtr, arr);
+  #endif
 }
-
 template <>
 void syncMeter<TrainMeters>(TrainMeters& mtrs);
 

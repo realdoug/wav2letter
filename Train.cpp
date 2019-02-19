@@ -126,14 +126,14 @@ int main(int argc, char** argv) {
   af::setSeed(FLAGS_seed);
   af::setFFTPlanCacheSize(FLAGS_fftcachesize);
 
-  maybeInitDistributedEnv(
-      FLAGS_enable_distributed,
+  if(FLAGS_enable_distributed)
+    initDistributedEnv(
       FLAGS_world_rank,
       FLAGS_world_size,
       FLAGS_rndv_filepath);
 
-  auto worldRank = fl::getWorldRank();
-  auto worldSize = fl::getWorldSize();
+  auto worldRank = w2l::getWorldRank();
+  auto worldSize = w2l::getWorldSize();
 
   bool isMaster = (worldRank == 0);
 
@@ -451,15 +451,19 @@ int main(int argc, char** argv) {
                    double initcritlr,
                    bool clampCrit,
                    int nepochs) {
+#if BUILD_DISTRIBUTED
     fl::distributeModuleGrads(ntwrk, gradNorm);
     fl::distributeModuleGrads(crit, gradNorm);
+#endif
 
     meters.loss.reset();
     meters.train.edit.reset();
     meters.train.wordedit.reset();
 
+#if BUILD_DISTRIBUTED
     fl::allReduceParameters(ntwrk);
     fl::allReduceParameters(crit);
+#endif
 
     auto resetTimeStatMeters = [&meters]() {
       meters.runtime.reset();

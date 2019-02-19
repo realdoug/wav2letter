@@ -12,9 +12,12 @@
 
 namespace w2l {
 
-void maybeInitDistributedEnv(
-    bool enableDistributed,
+void initDistributedEnv(
     int worldRank,
     int worldSize,
     const std::string& rndvFilepath);
+
+int getWorldSize();
+
+int getWorldRank();
 }

@@ -141,7 +141,7 @@ std::vector<T> localNormalize(
     int64_t curFrame = 0;
     // accumulate sum, sum^2 for computing mean, stddev
     for (auto i = b * perBatchSz; i < (b + 1) * perBatchSz; ++i) {
-      auto start = std::max(curFrame - rightCtxSize, 0L);
+      auto start = std::max(curFrame - rightCtxSize, INT64_C(0));
       auto end = std::min(curFrame + leftCtxSize, frameSz - 1);
       for (int64_t j = start; j <= end; ++j) {
         sum[j] += in[i];
@@ -152,7 +152,7 @@ std::vector<T> localNormalize(
     // compute mean, stddev
     for (auto j = 0; j < frameSz; ++j) {
       int64_t N = (std::min(j + rightCtxSize, frameSz - 1) -
-                   std::max(j - leftCtxSize, 0L) + 1) *
+                   std::max(j - leftCtxSize, INT64_C(0)) + 1) *
           perFrameSz;
       sum[j] /= N;
       sum2[j] /= N;

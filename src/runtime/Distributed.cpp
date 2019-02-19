@@ -16,29 +16,46 @@
 
 namespace w2l {
 
-void maybeInitDistributedEnv(
-    bool enableDistributed,
+#if BUILD_DISTRIBUTED
+  void initDistributedEnv(
+      int worldRank,
+      int worldSize,
+      const std::string& rndvFilepath) {
+
+    if (rndvFilepath.empty()) {
+      distributedInit(
+          fl::DistributedInit::MPI,
+          -1, // unused for MPI
+          -1, // unused for MPI
+          {{fl::DistributedConstants::kMaxDevicePerNode,
+            std::to_string(kMaxDevicePerNode)}});
+    } else {
+      distributedInit(
+          fl::DistributedInit::FILE_SYSTEM,
+          worldRank,
+          worldSize,
+          {{fl::DistributedConstants::kMaxDevicePerNode,
+            std::to_string(kMaxDevicePerNode)},
+          {fl::DistributedConstants::kFilePath, rndvFilepath}});
+    }
+  }
+
+  int getWorldSize() {
+    fl::getWorldSize();
+  }
+
+  int getWorldRank() {
+    fl::getWorldRank();
+  }
+#else
+  void initDistributedEnv(
     int worldRank,
     int worldSize,
-    const std::string& rndvFilepath) {
-  if (!enableDistributed) {
-    return;
-  }
-  if (rndvFilepath.empty()) {
-    distributedInit(
-        fl::DistributedInit::MPI,
-        -1, // unused for MPI
-        -1, // unused for MPI
-        {{fl::DistributedConstants::kMaxDevicePerNode,
-          std::to_string(kMaxDevicePerNode)}});
-  } else {
-    distributedInit(
-        fl::DistributedInit::FILE_SYSTEM,
-        worldRank,
-        worldSize,
-        {{fl::DistributedConstants::kMaxDevicePerNode,
-          std::to_string(kMaxDevicePerNode)},
-         {fl::DistributedConstants::kFilePath, rndvFilepath}});
-  }
-}
+    const std::string& rndvFilepath) { return; }
+
+  int getWorldSize() { return 1; }
+
+  int getWorldRank() { return 0; }
+#endif
+
 } // namespace w2l

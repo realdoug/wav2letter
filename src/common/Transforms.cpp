@@ -12,6 +12,7 @@
 
 #include <glog/logging.h>
 #include "common/Defines.h"
+#include <array>
 
 namespace w2l {
 
