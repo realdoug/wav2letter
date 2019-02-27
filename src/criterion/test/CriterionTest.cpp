@@ -65,7 +65,7 @@ void jacobian_test(
 
 TEST(CriterionTest, CTCEmptyTarget) {
   // Non-empty input, Empty target, batchsize > 0
-  auto input = Variable(af::array(3, 2, 5), true);
+  auto input = Variable(af::randu(3, 2, 5), true);
   auto target = Variable(af::array(0, 5), false);
   auto ctc = ConnectionistTemporalClassificationCriterion();
   auto loss = ctc({input, target}).front();
